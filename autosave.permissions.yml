@@ -1,0 +1,8 @@
+'autosave settings':
+  title: 'Autosave settings'
+  description: 'Allow access to the autosave settings.'
+  restrict access: FALSE
+'use autosave on content forms':
+  title: 'Use autosave on content forms'
+  description: 'Allow access to autosave content forms.'
+  restrict access: FALSE

@@ -1,0 +1,8 @@
+autosave.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    autosave_period:
+      type: integer
+    autosave_hidden:
+      type: integer

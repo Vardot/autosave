@@ -1,0 +1,75 @@
+#autosave-status {
+  display: none;
+  text-align: left;
+  z-index: 99;
+  color: #fff;
+  background: #37a;
+  position: fixed;
+  width: 100%;
+  height: 2em;
+  bottom: 0px;
+  right: 0px;
+  overflow: hidden;
+}
+
+#autosave-status img .left-arrow {
+  position: absolute;
+  top: -6px;
+  margin-left: 50px;
+}
+
+#autosave-status img .right-arrow {
+  position: absolute;
+  top: -6px;
+  margin-left: 20px;
+}
+
+#autosave-status .arrow {
+  background-color: #66a1cc;
+  border: 1px solid #2e516b;
+  color: #2e516b;
+  display: inline;
+  height: 15px;
+  margin-left: 60px;
+  margin-top: 4px;
+  position: absolute;
+  text-align: center;
+  width: 15px;
+  line-height: 1em;
+}
+
+#autosave-status #right-arrow {
+  margin-left: 80px;
+}
+
+#autosave-status .disabled {
+  background-color: #3174a5;
+}
+
+#autosave-status .enabled:hover {
+  background-color: #b3d0e6;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#autosave-status #status {
+  margin-left: 5px;
+}
+
+#autosave-status #view a {
+  margin-left: 40px;
+  color: #fff;
+  text-decoration: underline;
+}
+
+#autosave-status #delete a {
+  margin-left: 20px;
+  color: #fff;
+  text-decoration: underline;
+}
+
+#autosave-status a {
+  margin-left: 20px;
+  color: #fff;
+  text-decoration: underline;
+}

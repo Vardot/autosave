@@ -1,0 +1,15 @@
+jquery.autosave:
+  title: 'jQuery Autosave'
+  version: 1.1.0
+  license: 'MIT'
+  js:
+    js/jquery.autosave.js: {  }
+autosave:
+  title: Autosave
+  js:
+    js/autosave.js: {  }
+  css:
+    component:
+      css/autosave.css: {  }
+  dependencies:
+    - system/drupal.ajax

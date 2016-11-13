@@ -1,0 +1,9 @@
+services:
+  autosave.private_tempstore:
+    class: Drupal\autosave\AutosavePrivateTempStoreFactory
+    arguments: ['@keyvalue.expirable', '@lock', '@current_user', '@request_stack', '%autosave.tempstore.expire%']
+    tags:
+      - { name: backend_overridable }
+      
+parameters:
+  autosave.tempstore.expire: 1210000

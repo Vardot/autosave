@@ -1,0 +1,116 @@
+<?php
+
+/**
+ * @file
+ * Does background saves of node being edited.
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\autosave\Controller\AutosaveController;
+use Drupal\autosave\AutosavePrivateTempStoreFactory;
+
+/**
+ * Implements hook_help().
+ */
+function autosave_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'help.page.autosave':
+      $output = '<p>' . t('The autosave module automatically saves a form after a period of time.') . '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_form_alter() for node_type_form().
+ */
+function autosave_form_node_type_form_alter(&$form, $form_state) {
+  $form['workflow']['autosave'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable Autosave to add/edit forms for this content type'),
+    '#default_value' => \Drupal::config('autosave.content_types')->get($form['type']["#default_value"], 0),
+    '#description' => t('Check this box to enable Autosave for this content type.'),
+  );
+
+  $form['actions']['submit']['#submit'][] = 'autosave_node_type_submit';
+}
+
+/**
+ * Autosave node type settings submit.
+ */
+function autosave_node_type_submit(&$form, FormStateInterface $form_state) {
+  \Drupal::service('config.factory')->getEditable('autosave.content_types')
+    ->set($form['type']["#default_value"], $form['workflow']['autosave']['#value'])
+    ->save();
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function autosave_form_node_form_alter(&$form, &$form_state, $form_id) {
+
+  if (\Drupal::currentUser()->hasPermission('use autosave on content forms')) {
+    if (\Drupal::service('router.admin_context')->isAdminRoute(\Drupal::routeMatch()->getRouteObject())
+      &&  \Drupal::config('autosave.content_types')->get($form_state->getStorage()['form_display']->getTargetBundle(), 0)
+      && empty($_POST['autosave_form_path'])) {
+
+      global $base_url;
+
+      $path = \Drupal::service('path.current')->getPath();
+      $form['autosave_form_path'] = array(
+        '#type' => 'hidden',
+        '#value' => $path,
+      );
+
+      $formid = str_replace("_", "-", $form_id);
+      $autosave_settings = array();
+      $autosave_settings['formid'] = $formid;
+      $autosave_settings['url'] = $base_url . "/autosave/handler";
+      $autosave_settings['period'] = \Drupal::config('autosave.settings')->get('autosave_period', 10);
+      $autosave_settings['path'] = $path;
+
+      $autosave_private_tempstore = \Drupal::service('autosave.private_tempstore')->get('autosave');
+      $serialized_data = $autosave_private_tempstore->get('#formid:' . $form_id . '#path:' . $path);
+      $autosaved_data = unserialize($serialized_data);
+      
+      $timestamp = 0;
+      if (isset($autosaved_data['timestamp'])) {
+        $timestamp = $autosaved_data['timestamp'];
+      }
+
+      $autosave_settings['savedTimestamp'] = $timestamp;
+      $autosave_settings['savedDate'] = format_date($timestamp);
+           
+      // Attache the autosave settings to the drupal Settings in JavaScript.
+      $form['#attached']['drupalSettings']['autosave'] = $autosave_settings;
+
+      // Add the jquery.autosave and and autosave libraries to the form.
+      $form['#attached']['library'][] = 'autosave/jquery.autosave';
+      $form['#attached']['library'][] = 'autosave/autosave';
+    }
+  }
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function autosave_node_presave(NodeInterface $node) {
+
+  // Delete all autosaved forms for this node, before saving the node.
+  if (\Drupal::currentUser()->hasPermission('use autosave on content forms')) {
+    AutosaveController::deleteAutosavedForm($node->id());
+  }
+}
+
+/**
+ * Implements hook_node_predelete().
+ */
+function autosave_node_predelete(NodeInterface $node) {
+  
+  // Delete autosaved forms for this node, before deleting the node.
+  if (\Drupal::currentUser()->hasPermission('use autosave on content forms')) {
+    AutosaveController::deleteAutosavedForm($node->id());
+  }
+}

@@ -1,0 +1,23 @@
+autosave.save:
+  path: '/autosave/handler'
+  defaults:
+    _title: 'Autosave form'
+    _controller: '\Drupal\autosave\Controller\AutosaveController::autosave'
+  requirements:
+    _permission: 'use autosave on content forms'
+    no_cache: 'TRUE'
+autosave.restore:
+  path: '/autosave/restore/{formid}/{timestamp}/{path}'
+  defaults:
+    _title: 'Autosave form restore'
+    _controller: '\Drupal\autosave\Controller\AutosaveController::restore'
+  requirements:
+    _permission: 'use autosave on content forms'
+    no_cache: 'TRUE'
+autosave.admin_settings:
+  path: '/admin/config/content/autosave'
+  defaults:
+    _title: 'Autosave'
+    _form: \Drupal\autosave\Form\AutosaveAdminSettings
+  requirements:
+    _permission: 'autosave settings'
